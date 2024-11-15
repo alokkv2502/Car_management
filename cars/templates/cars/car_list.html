@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Your Cars - Car Management{% endblock %}
+
+{% block content %}
+<h1 class="text-center mb-4">Your Cars</h1>
+
+<!-- Search Bar -->
+<form method="get" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="q" class="form-control" placeholder="Search by title, description, or tags..." value="{{ query }}">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
+
+<!-- Product Cards -->
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for car in cars %}
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <!-- Car Image -->
+            {% if car.images.first %}
+            <img src="{{ car.images.first.image.url }}" class="card-img-top" alt="{{ car.title }}">
+            {% else %}
+            <img src="{% static 'images/default_car.jpg' %}" class="card-img-top" alt="Default Car">
+            {% endif %}
+            
+            <!-- Card Body -->
+            <div class="card-body">
+                <h5 class="card-title">{{ car.title }}</h5>
+                <p class="card-text">{{ car.description|truncatewords:15 }}</p>
+                <p class="text-muted"><strong>Tags:</strong> {{ car.tags|join:", " }}</p>
+            </div>
+
+            <!-- Card Footer with Actions -->
+            <div class="card-footer text-center">
+                <a href="{% url 'car_detail' car.pk %}" class="btn btn-primary btn-sm">View Details</a>
+                <a href="{% url 'car_edit' car.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+                <form method="post" action="{% url 'car_delete' car.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <!-- No Cars Found -->
+    <div class="col-12 text-center">
+        <p>No cars found. <a href="{% url 'car_new' %}">Add a new car</a>.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+<div class="mt-4">
+    {% if is_paginated %}
+    <nav>
+        <ul class="pagination justify-content-center">
+            {% if cars.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?q={{ query }}&page={{ cars.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+            {% for page_num in cars.paginator.page_range %}
+            <li class="page-item {% if page_num == cars.number %}active{% endif %}">
+                <a class="page-link" href="?q={{ query }}&page={{ page_num }}">{{ page_num }}</a>
+            </li>
+            {% endfor %}
+            {% if cars.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?q={{ query }}&page={{ cars.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

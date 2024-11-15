@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ car.title }} - Details{% endblock %}
+{% load static %}
+{% block content %}
+<div class="container py-5">
+    <!-- Car Image -->
+    <div class="row mb-4">
+        <div class="col-12">
+            {% if car.image %}
+            <img src="{{ car.image.url }}" class="img-fluid rounded shadow-lg" alt="{{ car.title }}" style="width: 100%; max-height: 500px; object-fit: cover;">
+            {% else %}
+            <img src="{% static 'images/default_car.jpg' %}" class="img-fluid rounded shadow-lg" alt="Default Car Image" style="width: 100%; max-height: 500px; object-fit: cover;">
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Car Details -->
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="display-4">{{ car.title }}</h1>
+            <h5 class="text-muted mt-3 mb-4">ABOUT THE CAR</h5>
+            <p>{{ car.description }}</p>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="col-md-4">
+            <h4 class="text-secondary">Actions</h4>
+            <hr>
+            <div class="d-grid gap-3 mt-3">
+                <a href="{% url 'car_edit' car.pk %}" class="btn btn-primary btn-lg">Edit Car</a>
+                <a href="{% url 'car_delete' car.pk %}" class="btn btn-danger btn-lg">Delete Car</a>
+                <a href="{% url 'car_list' %}" class="btn btn-secondary btn-lg">Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
